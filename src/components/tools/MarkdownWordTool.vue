@@ -10,7 +10,7 @@ import {
 
 const markdown = ref(`# Markdown 转 Word
 
-这是一个 **浏览器本地** 的 Markdown 转 Word 工具。
+将 Markdown 内容快速整理并导出为 Word 文档。
 
 ## 支持内容
 
@@ -20,7 +20,7 @@ const markdown = ref(`# Markdown 转 Word
 - **粗体**、*斜体*、\`行内代码\`
 - 普通段落
 
-> 文件不会上传到服务器。
+> 适合笔记、说明文档和常规内容整理。
 `)
 const filename = ref('markdown-export')
 const status = ref('')
@@ -110,7 +110,7 @@ async function exportDocx() {
         <h2>Markdown → Word</h2>
         <p>输入 Markdown，直接导出标准 DOCX 文件。</p>
       </div>
-      <span class="privacy-chip">本地处理</span>
+      <span class="privacy-chip">快速导出</span>
     </div>
 
     <div class="tool-actions import-row">

@@ -2,41 +2,53 @@
 import { RouterLink } from 'vue-router'
 
 const features = [
-  { title: 'Markdown → Word', text: '将 Markdown 内容直接导出为标准 .docx 文件。' },
-  { title: '图片格式转换', text: '在 PNG、JPEG、WebP 之间本地转换，无需上传服务器。' },
-  { title: '数据格式转换', text: 'JSON、CSV、TSV 常用文本数据格式快速互转。' },
-  { title: '二进制转换', text: '文本、Hex、Base64、UTF-8 字节之间即时转换。' },
+  { title: '文档与数据', text: 'Markdown 导出 Word，JSON、CSV、TSV 数据互转。' },
+  { title: '图片处理', text: '转换 PNG、JPEG、WebP，并调整尺寸与输出质量。' },
+  { title: '编码与校验', text: '处理 Base64、Hex、URL 编码和 SHA 哈希校验。' },
+  { title: '日常效率工具', text: '提供时间戳、UUID 与常用文本批量处理能力。' },
+]
+
+const toolOverview = [
+  { name: '文档与数据', format: 'DOCX · JSON · CSV' },
+  { name: '图片处理', format: '转换 · 缩放 · 压缩' },
+  { name: '编码解码', format: 'Base64 · Hex · URL' },
+  { name: '内容校验', format: 'SHA-256 · 384 · 512' },
+  { name: '效率工具', format: '时间戳 · UUID · 文本' },
 ]
 </script>
 
 <template>
   <section class="hero page-width">
     <div class="hero-copy">
-      <p class="eyebrow">WUMING / PERSONAL TOOLBOX</p>
-      <h1>把常用的小工具，<br />放在自己的网页里。</h1>
+      <p class="eyebrow">WUMING / ONLINE TOOLS</p>
+      <h1>常用工具，<br />打开就能使用。</h1>
       <p class="hero-text">
-        这是 Wuming 的个人主页与前端工具集合。工具尽量在浏览器本地完成处理，
-        适合部署在 <strong>wxwuming.github.io</strong> 作为随时可用的静态工具站。
+        集中处理文档、图片、数据、编码校验与常用文本任务，减少重复操作和网站切换，
+        让日常处理更简单、更高效。
       </p>
       <div class="hero-actions">
         <RouterLink class="button primary" to="/tools">打开工具箱</RouterLink>
         <a class="button ghost" href="https://github.com/wxwuming" target="_blank" rel="noreferrer">访问 GitHub</a>
       </div>
     </div>
-    <div class="hero-card" aria-hidden="true">
-      <div class="terminal-bar"><span></span><span></span><span></span></div>
-      <pre><code>$ whoami
-wuming
-
-$ cat mission.txt
-Build useful things.
-Keep them simple.
-Own the workflow.
-
-$ tools --status
-✓ browser-first
-✓ privacy-friendly
-✓ open & extensible</code></pre>
+    <div class="hero-card tool-overview-card" aria-label="工具概览">
+      <div class="overview-header">
+        <div>
+          <span class="overview-kicker">TOOLBOX</span>
+          <strong>常用工具</strong>
+        </div>
+        <span class="overview-status"><i></i> 可用</span>
+      </div>
+      <div class="overview-list">
+        <div v-for="item in toolOverview" :key="item.name" class="overview-item">
+          <span>{{ item.name }}</span>
+          <strong>{{ item.format }}</strong>
+        </div>
+      </div>
+      <div class="overview-footer">
+        <span>无需安装</span>
+        <span>即开即用</span>
+      </div>
     </div>
   </section>
 
@@ -60,8 +72,8 @@ $ tools --status
       <h2>关于 Wuming</h2>
     </div>
     <p>
-      这里可以继续补充你的个人简介、项目经历、联系方式和作品入口。
-      当前版本先把它作为一个干净、快速、可持续扩展的个人工具主页基础。
+      Wuming Tools 提供一组轻量、实用的日常工具，覆盖常见文档、图片、数据和编码处理场景。
+      目标是让高频的小任务更直接完成，把时间留给真正重要的工作。
     </p>
   </section>
 </template>

@@ -82,7 +82,7 @@ async function copyOutput() {
         <h2>文本 / Hex / Base64 / Bytes</h2>
         <p>基于 UTF-8 编码进行常用二进制表示转换。</p>
       </div>
-      <span class="privacy-chip">本地处理</span>
+      <span class="privacy-chip">即时转换</span>
     </div>
 
     <div class="format-row">

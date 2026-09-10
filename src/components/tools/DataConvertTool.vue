@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 type Format = 'json' | 'csv' | 'tsv'
 const sourceFormat = ref<Format>('json')
 const targetFormat = ref<Format>('csv')
-const input = ref('[\n  { "name": "Wuming", "tool": "Vue" },\n  { "name": "Tools", "tool": "TypeScript" }\n]')
+const input = ref('[\n  { "name": "Alice", "department": "Design" },\n  { "name": "Bob", "department": "Product" }\n]')
 const output = ref('')
 const error = ref('')
 
@@ -80,7 +80,7 @@ async function copyOutput() {
         <h2>JSON / CSV / TSV</h2>
         <p>适合常见表格型文本数据的快速互转。</p>
       </div>
-      <span class="privacy-chip">本地处理</span>
+      <span class="privacy-chip">快速转换</span>
     </div>
 
     <div class="format-row">

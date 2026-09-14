@@ -3,14 +3,22 @@ export type ToolId =
   | 'image'
   | 'data'
   | 'json'
+  | 'yaml'
+  | 'jwt'
   | 'regex'
+  | 'diff'
+  | 'cron'
   | 'color'
   | 'binary'
+  | 'base'
+  | 'html'
   | 'url'
   | 'hash'
+  | 'qr'
   | 'timestamp'
   | 'uuid'
   | 'random'
+  | 'password'
   | 'text'
 
 export interface ToolItem {
@@ -45,7 +53,11 @@ export const toolGroups = [
     description: '格式化数据、测试表达式并处理开发常用值。',
     tools: [
       { id: 'json', icon: 'code', label: 'JSON 格式化', description: '美化 / 压缩 / 排序', keywords: ['json', '格式化', '美化', '压缩', 'pretty', 'minify'] },
+      { id: 'yaml', icon: 'data', label: 'JSON ↔ YAML', description: '双向转换 / 配置文件', keywords: ['yaml', 'yml', 'json', '配置', '转换'] },
+      { id: 'jwt', icon: 'token', label: 'JWT 解析', description: 'Header / Payload / 时间', keywords: ['jwt', 'token', '令牌', 'payload', 'header', 'exp'] },
       { id: 'regex', icon: 'regex', label: '正则测试', description: '匹配 / 分组 / 位置', keywords: ['正则', 'regex', 'regexp', '匹配', '测试'] },
+      { id: 'diff', icon: 'diff', label: '文本 Diff', description: '新增 / 删除 / 行比较', keywords: ['diff', '文本', '比较', '差异', '对比'] },
+      { id: 'cron', icon: 'calendar', label: 'Cron 表达式', description: '解析 / 下次执行', keywords: ['cron', '计划任务', '定时', '表达式', 'crontab'] },
       { id: 'color', icon: 'color', label: '颜色转换', description: 'HEX / RGB / HSL', keywords: ['颜色', 'color', 'hex', 'rgb', 'hsl'] },
     ],
   },
@@ -55,6 +67,8 @@ export const toolGroups = [
     description: '处理常见编码、链接参数与文件摘要。',
     tools: [
       { id: 'binary', icon: 'binary', label: '编码转换', description: '文本 / Hex / Base64', keywords: ['base64', 'hex', '文本', '编码', '二进制'] },
+      { id: 'base', icon: 'radix', label: '进制转换', description: '2 / 8 / 10 / 16 进制', keywords: ['进制', '二进制', '八进制', '十进制', '十六进制', 'hex'] },
+      { id: 'html', icon: 'html', label: 'HTML Entity', description: '实体编码 / 解码', keywords: ['html', 'entity', '实体', '编码', '转义'] },
       { id: 'url', icon: 'link', label: 'URL 编解码', description: '链接 / 参数', keywords: ['url', 'encode', 'decode', '链接', '参数'] },
       { id: 'hash', icon: 'hash', label: '哈希校验', description: 'SHA-256 / 384 / 512', keywords: ['hash', 'sha', 'sha256', '校验', '摘要'] },
     ],
@@ -64,9 +78,11 @@ export const toolGroups = [
     code: '效率',
     description: '覆盖时间、标识符、随机值与文本整理等高频任务。',
     tools: [
+      { id: 'qr', icon: 'qr', label: '二维码工具', description: '生成 / 图片识别', keywords: ['二维码', 'qr', 'qrcode', '生成', '识别'] },
       { id: 'timestamp', icon: 'time', label: '时间戳转换', description: 'Unix / 日期时间', keywords: ['时间戳', 'unix', '日期', '时间'] },
       { id: 'uuid', icon: 'uuid', label: 'UUID 生成器', description: 'UUID v4', keywords: ['uuid', 'guid', '随机', '标识符'] },
-      { id: 'random', icon: 'random', label: '随机字符串', description: '长度 / 数量 / 字符集', keywords: ['随机', '字符串', '密码', 'token', 'random'] },
+      { id: 'random', icon: 'random', label: '随机字符串', description: '长度 / 数量 / 字符集', keywords: ['随机', '字符串', 'token', 'random'] },
+      { id: 'password', icon: 'key', label: '密码生成器', description: '安全随机 / 字符集', keywords: ['密码', 'password', '安全', '随机', 'crypto'] },
       { id: 'text', icon: 'text', label: '文本处理', description: '统计 / 去重 / 排序', keywords: ['文本', '统计', '去重', '排序', '字符'] },
     ],
   },

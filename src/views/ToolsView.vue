@@ -7,14 +7,22 @@ const MarkdownWordTool = defineAsyncComponent(() => import('../components/tools/
 const ImageConvertTool = defineAsyncComponent(() => import('../components/tools/ImageConvertTool.vue'))
 const DataConvertTool = defineAsyncComponent(() => import('../components/tools/DataConvertTool.vue'))
 const JsonFormatTool = defineAsyncComponent(() => import('../components/tools/JsonFormatTool.vue'))
+const YamlConvertTool = defineAsyncComponent(() => import('../components/tools/YamlConvertTool.vue'))
+const JwtTool = defineAsyncComponent(() => import('../components/tools/JwtTool.vue'))
 const RegexTool = defineAsyncComponent(() => import('../components/tools/RegexTool.vue'))
+const TextDiffTool = defineAsyncComponent(() => import('../components/tools/TextDiffTool.vue'))
+const CronTool = defineAsyncComponent(() => import('../components/tools/CronTool.vue'))
 const ColorConvertTool = defineAsyncComponent(() => import('../components/tools/ColorConvertTool.vue'))
 const BinaryConvertTool = defineAsyncComponent(() => import('../components/tools/BinaryConvertTool.vue'))
+const BaseConvertTool = defineAsyncComponent(() => import('../components/tools/BaseConvertTool.vue'))
+const HtmlEntityTool = defineAsyncComponent(() => import('../components/tools/HtmlEntityTool.vue'))
 const UrlCodecTool = defineAsyncComponent(() => import('../components/tools/UrlCodecTool.vue'))
 const HashTool = defineAsyncComponent(() => import('../components/tools/HashTool.vue'))
+const QrCodeTool = defineAsyncComponent(() => import('../components/tools/QrCodeTool.vue'))
 const TimestampTool = defineAsyncComponent(() => import('../components/tools/TimestampTool.vue'))
 const UuidTool = defineAsyncComponent(() => import('../components/tools/UuidTool.vue'))
 const RandomStringTool = defineAsyncComponent(() => import('../components/tools/RandomStringTool.vue'))
+const PasswordTool = defineAsyncComponent(() => import('../components/tools/PasswordTool.vue'))
 const TextTool = defineAsyncComponent(() => import('../components/tools/TextTool.vue'))
 import {
   allTools,
@@ -183,14 +191,22 @@ onBeforeUnmount(() => window.removeEventListener(favoritesChangedEvent, syncFavo
         <ImageConvertTool v-else-if="activeTool === 'image'" />
         <DataConvertTool v-else-if="activeTool === 'data'" />
         <JsonFormatTool v-else-if="activeTool === 'json'" />
+        <YamlConvertTool v-else-if="activeTool === 'yaml'" />
+        <JwtTool v-else-if="activeTool === 'jwt'" />
         <RegexTool v-else-if="activeTool === 'regex'" />
+        <TextDiffTool v-else-if="activeTool === 'diff'" />
+        <CronTool v-else-if="activeTool === 'cron'" />
         <ColorConvertTool v-else-if="activeTool === 'color'" />
         <BinaryConvertTool v-else-if="activeTool === 'binary'" />
+        <BaseConvertTool v-else-if="activeTool === 'base'" />
+        <HtmlEntityTool v-else-if="activeTool === 'html'" />
         <UrlCodecTool v-else-if="activeTool === 'url'" />
         <HashTool v-else-if="activeTool === 'hash'" />
+        <QrCodeTool v-else-if="activeTool === 'qr'" />
         <TimestampTool v-else-if="activeTool === 'timestamp'" />
         <UuidTool v-else-if="activeTool === 'uuid'" />
         <RandomStringTool v-else-if="activeTool === 'random'" />
+        <PasswordTool v-else-if="activeTool === 'password'" />
         <TextTool v-else />
       </div>
     </div>

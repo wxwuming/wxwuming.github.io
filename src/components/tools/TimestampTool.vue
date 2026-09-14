@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import UiSelect from '../UiSelect.vue'
 
 type Unit = 'seconds' | 'milliseconds'
+const unitOptions = [
+  { value: 'seconds', label: '秒' },
+  { value: 'milliseconds', label: '毫秒' },
+] as const
 
 function datetimeLocalValue(date: Date) {
   const shifted = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
@@ -60,7 +65,7 @@ convertDateTime()
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">TIME</p>
+        <p class="eyebrow">时间工具</p>
         <h2>时间戳转换</h2>
         <p>在 Unix 时间戳和可读日期时间之间快速转换。</p>
       </div>
@@ -73,10 +78,7 @@ convertDateTime()
         <label class="field-label" for="timestamp-value">时间戳</label>
         <input id="timestamp-value" v-model="timestamp" class="text-input" inputmode="numeric" />
         <label class="field-label" for="timestamp-unit">单位</label>
-        <select id="timestamp-unit" v-model="unit" class="text-input">
-          <option value="seconds">秒</option>
-          <option value="milliseconds">毫秒</option>
-        </select>
+        <UiSelect id="timestamp-unit" v-model="unit" :options="unitOptions" aria-label="时间戳单位" />
         <button class="button primary utility-button" type="button" @click="convertTimestamp">转换日期</button>
         <div class="result-list">
           <div class="result-row"><span>本地时间</span><strong>{{ timestampResult.local || '—' }}</strong></div>
@@ -97,7 +99,7 @@ convertDateTime()
       </section>
     </div>
 
-    <p v-if="error" class="error-text">{{ error }}</p>
+    <p v-if="error" class="error-text" role="alert">{{ error }}</p>
     <div class="tool-actions">
       <button class="button ghost" type="button" @click="useCurrentTime">使用当前时间</button>
     </div>

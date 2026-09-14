@@ -1,0 +1,28 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{ name: string; size?: number }>(), { size: 18 })
+
+const paths: Record<string, string[]> = {
+  document: ['M7 3.75h7l3 3V20.25H7z', 'M14 3.75v3h3', 'M9.5 11h5M9.5 14.5h5M9.5 18h3.25'],
+  image: ['M3.75 4.5h16.5v15H3.75z', 'M6 16l4-4 3 3 2-2 3 3', 'M8.5 9h.01'],
+  data: ['M4.75 6.25c0-1.5 3.25-2.75 7.25-2.75s7.25 1.25 7.25 2.75S16 9 12 9 4.75 7.75 4.75 6.25z', 'M4.75 6.25v5.5c0 1.5 3.25 2.75 7.25 2.75s7.25-1.25 7.25-2.75v-5.5', 'M4.75 11.75v5.5C4.75 18.75 8 20 12 20s7.25-1.25 7.25-2.75v-5.5'],
+  binary: ['M6.5 5h3v6h-3z', 'M14.5 5h3v6h-3z', 'M6.5 14h3v6h-3z', 'M14.5 14h3v6h-3z'],
+  link: ['M9.5 14.5l5-5', 'M7.75 16.25 6 18a3 3 0 0 1-4.25-4.25l3-3A3 3 0 0 1 9 10.5', 'M16.25 7.75 18 6a3 3 0 0 1 4.25 4.25l-3 3A3 3 0 0 1 15 13.5'],
+  hash: ['M9 3.75 7.25 20.25M16.75 3.75 15 20.25M4.25 9h16M3.5 15h16'],
+  time: ['M12 3.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5z', 'M12 7.5V12l3 1.75'],
+  uuid: ['M4 5h16v14H4z', 'M7.5 9h3M13.5 9h3M7.5 12h1M11 12h5.5M7.5 15h5M15 15h1.5'],
+  text: ['M5 6h14M8 10h8M6.5 14h11M9 18h6'],
+  shield: ['M12 3.5 19 6v5.5c0 4.2-2.8 7.55-7 9-4.2-1.45-7-4.8-7-9V6z', 'M9 12l2 2 4-4'],
+  github: ['M9 19.5c-4.5 1.35-4.5-2.25-6.3-2.7', 'M15.3 21v-3.5c0-1-.35-1.75-.85-2.35 2.8-.3 5.75-1.35 5.75-6.2 0-1.4-.5-2.5-1.3-3.4.15-.35.55-1.7-.1-3.55 0 0-1.05-.35-3.55 1.3a12 12 0 0 0-6.4 0C6.35 1.65 5.3 2 5.3 2c-.65 1.85-.25 3.2-.1 3.55-.8.9-1.3 2-1.3 3.4 0 4.85 2.95 5.9 5.75 6.2-.5.6-.85 1.35-.85 2.35V21'],
+  arrow: ['M5 12h13', 'M13 7l5 5-5 5'],
+}
+
+const iconPaths = computed(() => paths[props.name] ?? ['M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15z', 'M9 12h6M12 9v6'])
+</script>
+
+<template>
+  <svg class="icon-glyph" :width="size" :height="size" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path v-for="path in iconPaths" :key="path" :d="path" />
+  </svg>
+</template>

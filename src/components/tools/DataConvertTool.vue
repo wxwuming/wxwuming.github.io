@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import UiSelect from '../UiSelect.vue'
 
 type Format = 'json' | 'csv' | 'tsv'
+const formatOptions = [
+  { value: 'json', label: 'JSON' },
+  { value: 'csv', label: 'CSV' },
+  { value: 'tsv', label: 'TSV' },
+] as const
 const sourceFormat = ref<Format>('json')
 const targetFormat = ref<Format>('csv')
-const input = ref('[\n  { "name": "Alice", "department": "Design" },\n  { "name": "Bob", "department": "Product" }\n]')
+const input = ref('[\n  { "姓名": "小林", "部门": "设计" },\n  { "姓名": "小周", "部门": "产品" }\n]')
 const output = ref('')
 const error = ref('')
 
@@ -76,7 +82,7 @@ async function copyOutput() {
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">DATA</p>
+        <p class="eyebrow">数据转换</p>
         <h2>JSON / CSV / TSV</h2>
         <p>适合常见表格型文本数据的快速互转。</p>
       </div>
@@ -84,9 +90,9 @@ async function copyOutput() {
     </div>
 
     <div class="format-row">
-      <select v-model="sourceFormat" class="text-input"><option value="json">JSON</option><option value="csv">CSV</option><option value="tsv">TSV</option></select>
-      <button class="swap-button" type="button" @click="swapFormats">⇄</button>
-      <select v-model="targetFormat" class="text-input"><option value="json">JSON</option><option value="csv">CSV</option><option value="tsv">TSV</option></select>
+      <UiSelect v-model="sourceFormat" :options="formatOptions" aria-label="源数据格式" />
+      <button class="swap-button" type="button" aria-label="交换源格式与目标格式" @click="swapFormats">⇄</button>
+      <UiSelect v-model="targetFormat" :options="formatOptions" aria-label="目标数据格式" />
     </div>
 
     <div class="editor-grid">
@@ -94,7 +100,7 @@ async function copyOutput() {
       <label><span class="field-label">输出</span><textarea v-model="output" class="code-area" readonly spellcheck="false"></textarea></label>
     </div>
 
-    <p v-if="error" class="error-text">{{ error }}</p>
+    <p v-if="error" class="error-text" role="alert">{{ error }}</p>
     <div class="tool-actions">
       <button class="button primary" type="button" @click="convert">开始转换</button>
       <button class="button ghost" type="button" :disabled="!output" @click="copyOutput">复制结果</button>

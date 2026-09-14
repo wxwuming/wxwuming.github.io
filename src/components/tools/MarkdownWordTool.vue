@@ -106,7 +106,7 @@ async function exportDocx() {
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">DOCUMENT</p>
+        <p class="eyebrow">文档转换</p>
         <h2>Markdown → Word</h2>
         <p>输入 Markdown，直接导出标准 DOCX 文件。</p>
       </div>
@@ -116,7 +116,7 @@ async function exportDocx() {
     <div class="tool-actions import-row">
       <label class="button ghost file-button" for="markdown-file">导入 .md 文件</label>
       <input id="markdown-file" class="visually-hidden" type="file" accept=".md,text/markdown,text/plain" @change="importMarkdown" />
-      <span class="status-text">{{ status }}</span>
+      <span class="status-text" role="status" aria-live="polite">{{ status }}</span>
     </div>
 
     <label class="field-label" for="doc-name">文件名</label>

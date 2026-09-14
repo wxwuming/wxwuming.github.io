@@ -1,79 +1,104 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import IconGlyph from '../components/IconGlyph.vue'
 
 const features = [
-  { title: '文档与数据', text: 'Markdown 导出 Word，JSON、CSV、TSV 数据互转。' },
-  { title: '图片处理', text: '转换 PNG、JPEG、WebP，并调整尺寸与输出质量。' },
-  { title: '编码与校验', text: '处理 Base64、Hex、URL 编码和 SHA 哈希校验。' },
-  { title: '日常效率工具', text: '提供时间戳、UUID 与常用文本批量处理能力。' },
+  { icon: 'document', index: '01', title: '文档与格式', text: 'Markdown 导出 Word，JSON、CSV、TSV 与常见图片格式快速转换。', meta: 'DOCX · JSON · CSV · PNG' },
+  { icon: 'binary', index: '02', title: '编码与校验', text: '处理文本、Hex、Base64、URL 编解码，并生成 SHA-2 摘要。', meta: 'HEX · BASE64 · URL · SHA' },
+  { icon: 'time', index: '03', title: '日常效率', text: '时间戳转换、UUID 批量生成与文本清理，覆盖高频小任务。', meta: '时间 · UUID · 文本' },
 ]
 
 const toolOverview = [
-  { name: '文档与数据', format: 'DOCX · JSON · CSV' },
-  { name: '图片处理', format: '转换 · 缩放 · 压缩' },
-  { name: '编码解码', format: 'Base64 · Hex · URL' },
-  { name: '内容校验', format: 'SHA-256 · 384 · 512' },
-  { name: '效率工具', format: '时间戳 · UUID · 文本' },
+  { icon: 'document', name: 'Markdown → Word', detail: 'DOCX' },
+  { icon: 'image', name: '图片处理', detail: 'PNG / JPG / WebP' },
+  { icon: 'data', name: '数据转换', detail: 'JSON / CSV / TSV' },
+  { icon: 'binary', name: '编码转换', detail: '文本 / Hex / Base64' },
+  { icon: 'hash', name: '哈希校验', detail: 'SHA-2' },
 ]
 </script>
 
 <template>
   <section class="hero page-width">
     <div class="hero-copy">
-      <p class="eyebrow">WUMING / ONLINE TOOLS</p>
-      <h1>常用工具，<br />打开就能使用。</h1>
+      <div class="hero-kicker-row">
+        <p class="eyebrow">WUMING / 浏览器工具</p>
+        <span class="live-dot">9 项工具可用</span>
+      </div>
+      <h1>把琐碎任务，<br /><span>留在浏览器里。</span></h1>
       <p class="hero-text">
-        集中处理文档、图片、数据、编码校验与常用文本任务，减少重复操作和网站切换，
-        让日常处理更简单、更高效。
+        一个面向日常工作的轻量工具站。处理文档、图片、数据、编码和文本，打开页面即可开始，无需安装额外软件。
       </p>
       <div class="hero-actions">
-        <RouterLink class="button primary" to="/tools">打开工具箱</RouterLink>
-        <a class="button ghost" href="https://github.com/wxwuming" target="_blank" rel="noreferrer">访问 GitHub</a>
+        <RouterLink class="button primary" to="/tools">打开工具箱 <IconGlyph name="arrow" :size="16" /></RouterLink>
+        <a class="button ghost" href="https://github.com/wxwuming" target="_blank" rel="noreferrer"><IconGlyph name="github" :size="16" /> GitHub</a>
+      </div>
+      <div class="hero-facts" aria-label="站点特点">
+        <span><i></i> 浏览器内处理</span>
+        <span><i></i> 无需账号</span>
+        <span><i></i> 即开即用</span>
       </div>
     </div>
-    <div class="hero-card tool-overview-card" aria-label="工具概览">
-      <div class="overview-header">
-        <div>
-          <span class="overview-kicker">TOOLBOX</span>
-          <strong>常用工具</strong>
-        </div>
-        <span class="overview-status"><i></i> 可用</span>
+
+    <div class="utility-console" aria-label="工具箱能力概览">
+      <div class="console-topbar">
+        <div class="console-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span>WUMING / 工具箱</span>
+        <span class="console-ready">可用</span>
       </div>
-      <div class="overview-list">
-        <div v-for="item in toolOverview" :key="item.name" class="overview-item">
-          <span>{{ item.name }}</span>
-          <strong>{{ item.format }}</strong>
+      <div class="console-body">
+        <div class="console-heading">
+          <div><span>当前可用</span><strong>常用工具工作台</strong></div>
+          <span class="console-count">09</span>
         </div>
-      </div>
-      <div class="overview-footer">
-        <span>无需安装</span>
-        <span>即开即用</span>
+        <div class="console-list">
+          <RouterLink v-for="item in toolOverview" :key="item.name" class="console-item" to="/tools">
+            <span class="console-icon"><IconGlyph :name="item.icon" :size="17" /></span>
+            <span class="console-name">{{ item.name }}</span>
+            <code>{{ item.detail }}</code>
+            <IconGlyph class="console-arrow" name="arrow" :size="15" />
+          </RouterLink>
+        </div>
+        <div class="console-footer"><span>浏览器内处理</span><span>无需上传文件</span></div>
       </div>
     </div>
   </section>
 
-  <section class="page-width section-block">
-    <div class="section-heading">
-      <p class="eyebrow">TOOLS</p>
-      <h2>现在可以做什么</h2>
+  <section class="capability-section page-width">
+    <div class="section-heading-row">
+      <div class="section-heading">
+        <p class="eyebrow">工具能力</p>
+        <h2>常用工作，一站处理。</h2>
+      </div>
+      <p>按任务类型组织工具，不需要记住复杂入口。进入工具箱后，可在同一个稳定工作区中连续切换。</p>
     </div>
+
     <div class="feature-grid">
-      <article v-for="item in features" :key="item.title" class="feature-card">
-        <span class="feature-index">0{{ features.indexOf(item) + 1 }}</span>
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.text }}</p>
-      </article>
+      <RouterLink v-for="item in features" :key="item.title" class="feature-card" to="/tools">
+        <div class="feature-card-top">
+          <span class="feature-icon"><IconGlyph :name="item.icon" :size="20" /></span>
+          <span class="feature-index">{{ item.index }}</span>
+        </div>
+        <div class="feature-card-copy">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.text }}</p>
+        </div>
+        <div class="feature-card-meta">
+          <code>{{ item.meta }}</code>
+          <IconGlyph name="arrow" :size="16" />
+        </div>
+      </RouterLink>
     </div>
   </section>
 
-  <section class="page-width about-section">
-    <div>
-      <p class="eyebrow">ABOUT</p>
-      <h2>关于 Wuming</h2>
+  <section class="about-section page-width">
+    <div class="about-main">
+      <p class="eyebrow">关于 Wuming</p>
+      <h2>为高频的小任务，保留一个直接入口。</h2>
     </div>
-    <p>
-      Wuming Tools 提供一组轻量、实用的日常工具，覆盖常见文档、图片、数据和编码处理场景。
-      目标是让高频的小任务更直接完成，把时间留给真正重要的工作。
-    </p>
+    <div class="about-copy">
+      <p>Wuming Tools 聚焦那些会反复出现、又不需要复杂软件的处理需求。界面保持克制，工具保持独立，让任务尽可能在当前页面完成。</p>
+      <a href="https://github.com/wxwuming" target="_blank" rel="noreferrer" class="text-link">查看 GitHub <IconGlyph name="arrow" :size="15" /></a>
+    </div>
+    <div class="about-signature" aria-hidden="true">W</div>
   </section>
 </template>

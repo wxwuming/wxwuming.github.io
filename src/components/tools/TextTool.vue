@@ -41,7 +41,7 @@ async function copyOutput() {
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">TEXT</p>
+        <p class="eyebrow">文本处理</p>
         <h2>文本处理</h2>
         <p>统计文本信息，并完成去空行、去重、排序和大小写转换。</p>
       </div>

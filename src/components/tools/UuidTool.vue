@@ -33,7 +33,7 @@ generate()
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">UUID</p>
+        <p class="eyebrow">标识符生成</p>
         <h2>UUID 生成器</h2>
         <p>批量生成标准 UUID v4 标识符。</p>
       </div>

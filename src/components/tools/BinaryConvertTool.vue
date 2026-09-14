@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import UiSelect from '../UiSelect.vue'
 
 type Encoding = 'text' | 'hex' | 'base64' | 'bytes'
+const encodingOptions = [
+  { value: 'text', label: '文本' },
+  { value: 'hex', label: 'Hex' },
+  { value: 'base64', label: 'Base64' },
+  { value: 'bytes', label: '字节' },
+] as const
 const sourceType = ref<Encoding>('text')
 const targetType = ref<Encoding>('hex')
-const input = ref('Wuming Tools')
+const input = ref('无名工具')
 const output = ref('')
 const error = ref('')
 
@@ -78,24 +85,24 @@ async function copyOutput() {
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">BINARY</p>
-        <h2>文本 / Hex / Base64 / Bytes</h2>
+        <p class="eyebrow">编码转换</p>
+        <h2>文本 / Hex / Base64 / 字节</h2>
         <p>基于 UTF-8 编码进行常用二进制表示转换。</p>
       </div>
       <span class="privacy-chip">即时转换</span>
     </div>
 
     <div class="format-row">
-      <select v-model="sourceType" class="text-input"><option value="text">Text</option><option value="hex">Hex</option><option value="base64">Base64</option><option value="bytes">Bytes</option></select>
-      <button class="swap-button" type="button" @click="swap">⇄</button>
-      <select v-model="targetType" class="text-input"><option value="text">Text</option><option value="hex">Hex</option><option value="base64">Base64</option><option value="bytes">Bytes</option></select>
+      <UiSelect v-model="sourceType" :options="encodingOptions" aria-label="源编码格式" />
+      <button class="swap-button" type="button" aria-label="交换源编码与目标编码" @click="swap">⇄</button>
+      <UiSelect v-model="targetType" :options="encodingOptions" aria-label="目标编码格式" />
     </div>
 
     <div class="editor-grid">
       <label><span class="field-label">输入</span><textarea v-model="input" class="code-area" spellcheck="false"></textarea></label>
       <label><span class="field-label">输出</span><textarea v-model="output" class="code-area" readonly spellcheck="false"></textarea></label>
     </div>
-    <p v-if="error" class="error-text">{{ error }}</p>
+    <p v-if="error" class="error-text" role="alert">{{ error }}</p>
     <div class="tool-actions">
       <button class="button primary" type="button" @click="convert">转换</button>
       <button class="button ghost" type="button" :disabled="!output" @click="copyOutput">复制结果</button>

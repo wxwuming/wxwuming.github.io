@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import UiSelect from '../UiSelect.vue'
 
+const imageFormatOptions = [
+  { value: 'image/png', label: 'PNG' },
+  { value: 'image/jpeg', label: 'JPEG' },
+  { value: 'image/webp', label: 'WebP' },
+] as const
 const file = ref<File | null>(null)
 const previewUrl = ref('')
 const outputType = ref<'image/png' | 'image/jpeg' | 'image/webp'>('image/webp')
@@ -90,7 +96,7 @@ async function convertImage() {
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">IMAGE</p>
+        <p class="eyebrow">图片处理</p>
         <h2>图片转换与缩放</h2>
         <p>转换 PNG、JPEG、WebP，并按需要调整尺寸与输出质量。</p>
       </div>
@@ -108,11 +114,7 @@ async function convertImage() {
     <div class="control-grid">
       <label>
         <span class="field-label">输出格式</span>
-        <select v-model="outputType" class="text-input">
-          <option value="image/png">PNG</option>
-          <option value="image/jpeg">JPEG</option>
-          <option value="image/webp">WebP</option>
-        </select>
+        <UiSelect v-model="outputType" :options="imageFormatOptions" aria-label="输出格式" />
       </label>
       <label>
         <span class="field-label">质量 {{ Math.round(quality * 100) }}%</span>
@@ -137,7 +139,7 @@ async function convertImage() {
 
     <div class="tool-actions">
       <button class="button primary" type="button" @click="convertImage">转换并下载</button>
-      <span class="status-text">{{ status }}</span>
+      <span class="status-text" role="status" aria-live="polite">{{ status }}</span>
     </div>
   </div>
 </template>

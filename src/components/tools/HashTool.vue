@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import UiSelect from '../UiSelect.vue'
 
 type HashAlgorithm = 'SHA-256' | 'SHA-384' | 'SHA-512'
 type SourceMode = 'text' | 'file'
 
+const sourceModeOptions = [
+  { value: 'text', label: '文本' },
+  { value: 'file', label: '文件' },
+] as const
+const algorithmOptions = [
+  { value: 'SHA-256', label: 'SHA-256' },
+  { value: 'SHA-384', label: 'SHA-384' },
+  { value: 'SHA-512', label: 'SHA-512' },
+] as const
 const algorithm = ref<HashAlgorithm>('SHA-256')
 const sourceMode = ref<SourceMode>('text')
-const input = ref('Wuming Tools')
+const input = ref('无名工具')
 const file = ref<File | null>(null)
 const result = ref('')
 const status = ref('')
@@ -42,7 +52,7 @@ async function copyResult() {
   <div class="tool-panel">
     <div class="tool-title-row">
       <div>
-        <p class="eyebrow">HASH</p>
+        <p class="eyebrow">哈希校验</p>
         <h2>哈希校验</h2>
         <p>生成文本或文件的 SHA 摘要，用于内容比对与完整性校验。</p>
       </div>
@@ -52,18 +62,11 @@ async function copyResult() {
     <div class="control-grid">
       <label>
         <span class="field-label">数据来源</span>
-        <select v-model="sourceMode" class="text-input">
-          <option value="text">文本</option>
-          <option value="file">文件</option>
-        </select>
+        <UiSelect v-model="sourceMode" :options="sourceModeOptions" aria-label="数据来源" />
       </label>
       <label>
         <span class="field-label">算法</span>
-        <select v-model="algorithm" class="text-input">
-          <option value="SHA-256">SHA-256</option>
-          <option value="SHA-384">SHA-384</option>
-          <option value="SHA-512">SHA-512</option>
-        </select>
+        <UiSelect v-model="algorithm" :options="algorithmOptions" aria-label="哈希算法" />
       </label>
     </div>
 
@@ -86,7 +89,7 @@ async function copyResult() {
     <div class="tool-actions">
       <button class="button primary" type="button" @click="calculateHash">计算摘要</button>
       <button class="button ghost" type="button" :disabled="!result" @click="copyResult">复制结果</button>
-      <span v-if="sourceMode === 'file'" class="status-text">{{ status }}</span>
+      <span v-if="sourceMode === 'file'" class="status-text" role="status" aria-live="polite">{{ status }}</span>
     </div>
   </div>
 </template>

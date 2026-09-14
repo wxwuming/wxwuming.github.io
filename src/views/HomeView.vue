@@ -1,103 +1,222 @@
 <script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import IconGlyph from '../components/IconGlyph.vue'
+import {
+  allTools,
+  favoritesChangedEvent,
+  readFavoriteToolIds,
+  readRecentToolIds,
+  recentToolsChangedEvent,
+  toolGroups,
+  type ToolId,
+} from '../data/tools'
 
-const features = [
-  { icon: 'document', index: '01', title: '文档与格式', text: 'Markdown 导出 Word，JSON、CSV、TSV 与常见图片格式快速转换。', meta: 'DOCX · JSON · CSV · PNG' },
-  { icon: 'binary', index: '02', title: '编码与校验', text: '处理文本、Hex、Base64、URL 编解码，并生成 SHA-2 摘要。', meta: 'HEX · BASE64 · URL · SHA' },
-  { icon: 'time', index: '03', title: '日常效率', text: '时间戳转换、UUID 批量生成与文本清理，覆盖高频小任务。', meta: '时间 · UUID · 文本' },
-]
+const searchText = ref('')
+const searchInputRef = ref<HTMLInputElement | null>(null)
+const recentToolIds = ref<ToolId[]>([])
+const favoriteToolIds = ref<ToolId[]>([])
 
-const toolOverview = [
-  { icon: 'document', name: 'Markdown → Word', detail: 'DOCX' },
-  { icon: 'image', name: '图片处理', detail: 'PNG / JPG / WebP' },
-  { icon: 'data', name: '数据转换', detail: 'JSON / CSV / TSV' },
-  { icon: 'binary', name: '编码转换', detail: '文本 / Hex / Base64' },
-  { icon: 'hash', name: '哈希校验', detail: 'SHA-2' },
-]
+const popularToolIds: ToolId[] = ['json', 'timestamp', 'data', 'binary', 'regex']
+const popularTools = popularToolIds
+  .map((id) => allTools.find((tool) => tool.id === id))
+  .filter((tool) => tool !== undefined)
+
+const normalizedSearch = computed(() => searchText.value.trim().toLowerCase())
+const filteredTools = computed(() => {
+  if (!normalizedSearch.value) return []
+  return allTools.filter((tool) => {
+    const haystack = [tool.label, tool.description, ...tool.keywords].join(' ').toLowerCase()
+    return haystack.includes(normalizedSearch.value)
+  })
+})
+
+const recentTools = computed(() =>
+  recentToolIds.value
+    .map((id) => allTools.find((tool) => tool.id === id))
+    .filter((tool) => tool !== undefined),
+)
+
+const favoriteTools = computed(() =>
+  favoriteToolIds.value
+    .map((id) => allTools.find((tool) => tool.id === id))
+    .filter((tool) => tool !== undefined),
+)
+
+function toolRoute(id: ToolId) {
+  return { path: '/tools', query: { tool: id } }
+}
+
+function focusSearch(event: KeyboardEvent) {
+  const target = event.target as HTMLElement | null
+  const isTyping = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable
+  if (event.key !== '/' || isTyping) return
+  event.preventDefault()
+  searchInputRef.value?.focus()
+  searchInputRef.value?.select()
+}
+
+function syncStoredTools() {
+  recentToolIds.value = readRecentToolIds()
+  favoriteToolIds.value = readFavoriteToolIds()
+}
+
+onMounted(() => {
+  syncStoredTools()
+  window.addEventListener('keydown', focusSearch)
+  window.addEventListener(favoritesChangedEvent, syncStoredTools)
+  window.addEventListener(recentToolsChangedEvent, syncStoredTools)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', focusSearch)
+  window.removeEventListener(favoritesChangedEvent, syncStoredTools)
+  window.removeEventListener(recentToolsChangedEvent, syncStoredTools)
+})
 </script>
 
 <template>
-  <section class="hero page-width">
+  <section class="hero home-hero page-width">
     <div class="hero-copy">
       <div class="hero-kicker-row">
-        <p class="eyebrow">WUMING / 浏览器工具</p>
-        <span class="live-dot">9 项工具可用</span>
+        <p class="eyebrow">WUMING / 在线工具</p>
+        <span class="live-dot">{{ allTools.length }} 项工具可用</span>
       </div>
-      <h1>把琐碎任务，<br /><span>留在浏览器里。</span></h1>
+      <h1>常用在线工具，<br /><span>打开即可使用。</span></h1>
       <p class="hero-text">
-        一个面向日常工作的轻量工具站。处理文档、图片、数据、编码和文本，打开页面即可开始，无需安装额外软件。
+        文档、图片、数据、开发调试、编码与文本工具集中在一个页面。无需安装软件，无需注册账号，常见处理任务尽量在浏览器本地完成。
       </p>
+
+      <div class="tool-search-shell">
+        <div class="tool-search-input-wrap">
+          <IconGlyph name="search" :size="18" />
+          <input
+            ref="searchInputRef"
+            v-model="searchText"
+            class="tool-search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="搜索工具，例如：时间戳、JSON、Base64、正则"
+            aria-label="搜索工具"
+          />
+          <kbd>/</kbd>
+        </div>
+        <div v-if="normalizedSearch" class="tool-search-results" aria-live="polite">
+          <RouterLink
+            v-for="tool in filteredTools"
+            :key="tool.id"
+            class="tool-search-result"
+            :to="toolRoute(tool.id)"
+          >
+            <span class="search-result-icon"><IconGlyph :name="tool.icon" :size="17" /></span>
+            <span><strong>{{ tool.label }}</strong><small>{{ tool.description }}</small></span>
+            <IconGlyph name="arrow" :size="15" />
+          </RouterLink>
+          <p v-if="filteredTools.length === 0" class="search-empty">没有找到匹配工具，可以尝试其他关键词。</p>
+        </div>
+      </div>
+
       <div class="hero-actions">
-        <RouterLink class="button primary" to="/tools">打开工具箱 <IconGlyph name="arrow" :size="16" /></RouterLink>
-        <a class="button ghost" href="https://github.com/wxwuming" target="_blank" rel="noreferrer"><IconGlyph name="github" :size="16" /> GitHub</a>
+        <RouterLink class="button primary" to="/tools">浏览全部工具 <IconGlyph name="arrow" :size="16" /></RouterLink>
       </div>
       <div class="hero-facts" aria-label="站点特点">
         <span><i></i> 浏览器内处理</span>
         <span><i></i> 无需账号</span>
-        <span><i></i> 即开即用</span>
+        <span><i></i> Ctrl K 全局搜索</span>
       </div>
     </div>
 
-    <div class="utility-console" aria-label="工具箱能力概览">
+    <div class="utility-console" aria-label="常用工具">
       <div class="console-topbar">
         <div class="console-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-        <span>WUMING / 工具箱</span>
+        <span>常用工具</span>
         <span class="console-ready">可用</span>
       </div>
       <div class="console-body">
         <div class="console-heading">
-          <div><span>当前可用</span><strong>常用工具工作台</strong></div>
-          <span class="console-count">09</span>
+          <div><span>快速入口</span><strong>直接进入工具</strong></div>
+          <span class="console-count">{{ String(allTools.length).padStart(2, '0') }}</span>
         </div>
         <div class="console-list">
-          <RouterLink v-for="item in toolOverview" :key="item.name" class="console-item" to="/tools">
-            <span class="console-icon"><IconGlyph :name="item.icon" :size="17" /></span>
-            <span class="console-name">{{ item.name }}</span>
-            <code>{{ item.detail }}</code>
+          <RouterLink v-for="tool in popularTools" :key="tool.id" class="console-item" :to="toolRoute(tool.id)">
+            <span class="console-icon"><IconGlyph :name="tool.icon" :size="17" /></span>
+            <span class="console-name">{{ tool.label }}</span>
+            <code>{{ tool.description }}</code>
             <IconGlyph class="console-arrow" name="arrow" :size="15" />
           </RouterLink>
         </div>
-        <div class="console-footer"><span>浏览器内处理</span><span>无需上传文件</span></div>
+        <div class="console-footer"><span>无需安装</span><span>数据尽量留在本地</span></div>
       </div>
+    </div>
+  </section>
+
+  <section v-if="favoriteTools.length" class="recent-section favorite-section page-width">
+    <div class="recent-heading">
+      <div><p class="eyebrow">我的收藏</p><h2>常用工具，一次直达。</h2></div>
+      <span>收藏保存在当前浏览器</span>
+    </div>
+    <div class="recent-tools">
+      <RouterLink v-for="tool in favoriteTools" :key="tool.id" class="recent-tool favorite-tool" :to="toolRoute(tool.id)">
+        <span class="recent-tool-icon"><IconGlyph :name="tool.icon" :size="17" /></span>
+        <span><strong>{{ tool.label }}</strong><small>{{ tool.description }}</small></span>
+        <IconGlyph name="star" :size="15" />
+      </RouterLink>
+    </div>
+  </section>
+
+  <section v-if="recentTools.length" class="recent-section page-width">
+    <div class="recent-heading">
+      <div><p class="eyebrow">最近使用</p><h2>继续上次的工具。</h2></div>
+      <span>保存在当前浏览器</span>
+    </div>
+    <div class="recent-tools">
+      <RouterLink v-for="tool in recentTools" :key="tool.id" class="recent-tool" :to="toolRoute(tool.id)">
+        <span class="recent-tool-icon"><IconGlyph :name="tool.icon" :size="17" /></span>
+        <span><strong>{{ tool.label }}</strong><small>{{ tool.description }}</small></span>
+        <IconGlyph name="arrow" :size="15" />
+      </RouterLink>
     </div>
   </section>
 
   <section class="capability-section page-width">
     <div class="section-heading-row">
       <div class="section-heading">
-        <p class="eyebrow">工具能力</p>
-        <h2>常用工作，一站处理。</h2>
+        <p class="eyebrow">全部工具</p>
+        <h2>按任务快速找到工具。</h2>
       </div>
-      <p>按任务类型组织工具，不需要记住复杂入口。进入工具箱后，可在同一个稳定工作区中连续切换。</p>
+      <p>工具按实际任务分类，每个入口都可以直接打开和分享。进入工具后可使用星标收藏，或按 Ctrl K 在任意页面快速搜索。</p>
     </div>
 
-    <div class="feature-grid">
-      <RouterLink v-for="item in features" :key="item.title" class="feature-card" to="/tools">
-        <div class="feature-card-top">
-          <span class="feature-icon"><IconGlyph :name="item.icon" :size="20" /></span>
-          <span class="feature-index">{{ item.index }}</span>
+    <div class="tool-category-grid">
+      <article v-for="group in toolGroups" :key="group.label" class="tool-category-card">
+        <div class="category-card-head">
+          <div><span>{{ group.code }}</span><h3>{{ group.label }}</h3></div>
+          <code>{{ String(group.tools.length).padStart(2, '0') }}</code>
         </div>
-        <div class="feature-card-copy">
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.text }}</p>
+        <p>{{ group.description }}</p>
+        <div class="category-tool-list">
+          <RouterLink v-for="tool in group.tools" :key="tool.id" :to="toolRoute(tool.id)">
+            <span class="category-tool-icon"><IconGlyph :name="tool.icon" :size="16" /></span>
+            <span><strong>{{ tool.label }}</strong><small>{{ tool.description }}</small></span>
+            <IconGlyph name="arrow" :size="14" />
+          </RouterLink>
         </div>
-        <div class="feature-card-meta">
-          <code>{{ item.meta }}</code>
-          <IconGlyph name="arrow" :size="16" />
-        </div>
-      </RouterLink>
+      </article>
     </div>
   </section>
 
-  <section class="about-section page-width">
+  <section class="about-section trust-section page-width">
     <div class="about-main">
-      <p class="eyebrow">关于 Wuming</p>
-      <h2>为高频的小任务，保留一个直接入口。</h2>
+      <p class="eyebrow">使用方式</p>
+      <h2>简单、直接，也更关注数据边界。</h2>
     </div>
-    <div class="about-copy">
-      <p>Wuming Tools 聚焦那些会反复出现、又不需要复杂软件的处理需求。界面保持克制，工具保持独立，让任务尽可能在当前页面完成。</p>
-      <a href="https://github.com/wxwuming" target="_blank" rel="noreferrer" class="text-link">查看 GitHub <IconGlyph name="arrow" :size="15" /></a>
+    <div class="about-copy trust-points">
+      <p>当前工具以浏览器端处理为主，常见文本和文件任务无需额外安装软件，也不要求登录账号。</p>
+      <div class="trust-list">
+        <span><IconGlyph name="shield" :size="16" /> 浏览器内处理</span>
+        <span><IconGlyph name="document" :size="16" /> 无需上传即可完成的任务尽量不上传</span>
+        <span><IconGlyph name="star" :size="16" /> 收藏与最近使用仅保存在当前浏览器</span>
+      </div>
     </div>
     <div class="about-signature" aria-hidden="true">W</div>
   </section>

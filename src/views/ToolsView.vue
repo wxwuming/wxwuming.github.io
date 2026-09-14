@@ -1,50 +1,41 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import IconGlyph from '../components/IconGlyph.vue'
-import MarkdownWordTool from '../components/tools/MarkdownWordTool.vue'
-import ImageConvertTool from '../components/tools/ImageConvertTool.vue'
-import DataConvertTool from '../components/tools/DataConvertTool.vue'
-import BinaryConvertTool from '../components/tools/BinaryConvertTool.vue'
-import UrlCodecTool from '../components/tools/UrlCodecTool.vue'
-import HashTool from '../components/tools/HashTool.vue'
-import TimestampTool from '../components/tools/TimestampTool.vue'
-import UuidTool from '../components/tools/UuidTool.vue'
-import TextTool from '../components/tools/TextTool.vue'
 
-const toolGroups = [
-  {
-    label: '文件与格式',
-    code: '文件',
-    tools: [
-      { id: 'markdown', icon: 'document', label: 'Markdown → Word', description: '导出标准 DOCX' },
-      { id: 'image', icon: 'image', label: '图片处理', description: '转换 / 缩放 / 压缩' },
-      { id: 'data', icon: 'data', label: '数据转换', description: 'JSON / CSV / TSV' },
-    ],
-  },
-  {
-    label: '编码与校验',
-    code: '编码',
-    tools: [
-      { id: 'binary', icon: 'binary', label: '编码转换', description: '文本 / Hex / Base64' },
-      { id: 'url', icon: 'link', label: 'URL 编解码', description: '链接 / 参数' },
-      { id: 'hash', icon: 'hash', label: '哈希校验', description: 'SHA-256 / 384 / 512' },
-    ],
-  },
-  {
-    label: '日常工具',
-    code: '效率',
-    tools: [
-      { id: 'timestamp', icon: 'time', label: '时间戳转换', description: 'Unix / 日期时间' },
-      { id: 'uuid', icon: 'uuid', label: 'UUID 生成器', description: 'UUID v4' },
-      { id: 'text', icon: 'text', label: '文本处理', description: '统计 / 去重 / 排序' },
-    ],
-  },
-] as const
+const MarkdownWordTool = defineAsyncComponent(() => import('../components/tools/MarkdownWordTool.vue'))
+const ImageConvertTool = defineAsyncComponent(() => import('../components/tools/ImageConvertTool.vue'))
+const DataConvertTool = defineAsyncComponent(() => import('../components/tools/DataConvertTool.vue'))
+const JsonFormatTool = defineAsyncComponent(() => import('../components/tools/JsonFormatTool.vue'))
+const RegexTool = defineAsyncComponent(() => import('../components/tools/RegexTool.vue'))
+const ColorConvertTool = defineAsyncComponent(() => import('../components/tools/ColorConvertTool.vue'))
+const BinaryConvertTool = defineAsyncComponent(() => import('../components/tools/BinaryConvertTool.vue'))
+const UrlCodecTool = defineAsyncComponent(() => import('../components/tools/UrlCodecTool.vue'))
+const HashTool = defineAsyncComponent(() => import('../components/tools/HashTool.vue'))
+const TimestampTool = defineAsyncComponent(() => import('../components/tools/TimestampTool.vue'))
+const UuidTool = defineAsyncComponent(() => import('../components/tools/UuidTool.vue'))
+const RandomStringTool = defineAsyncComponent(() => import('../components/tools/RandomStringTool.vue'))
+const TextTool = defineAsyncComponent(() => import('../components/tools/TextTool.vue'))
+import {
+  allTools,
+  favoritesChangedEvent,
+  isToolId,
+  readFavoriteToolIds,
+  recordRecentTool,
+  toggleFavoriteTool,
+  toolGroups,
+  type ToolId,
+} from '../data/tools'
 
-type ToolId = (typeof toolGroups)[number]['tools'][number]['id']
-const activeTool = ref<ToolId>('markdown')
+const route = useRoute()
+const router = useRouter()
+const initialTool: ToolId = isToolId(route.query.tool) ? route.query.tool : 'markdown'
+const activeTool = ref<ToolId>(initialTool)
 const workspaceRef = ref<HTMLElement | null>(null)
 const workspaceMinHeight = ref(0)
+const favoriteIds = ref<ToolId[]>(readFavoriteToolIds())
+
+recordRecentTool(initialTool)
 
 const activeToolMeta = computed(() => {
   for (const group of toolGroups) {
@@ -53,6 +44,16 @@ const activeToolMeta = computed(() => {
   }
   return null
 })
+
+const activeIsFavorite = computed(() => favoriteIds.value.includes(activeTool.value))
+
+function syncFavorites() {
+  favoriteIds.value = readFavoriteToolIds()
+}
+
+function toggleActiveFavorite() {
+  favoriteIds.value = toggleFavoriteTool(activeTool.value)
+}
 
 function preserveWorkspaceHeight() {
   const workspace = workspaceRef.value
@@ -64,12 +65,16 @@ function preserveWorkspaceHeight() {
   )
 }
 
-async function selectTool(toolId: ToolId) {
-  if (activeTool.value === toolId) return
+async function setActiveTool(toolId: ToolId) {
+  if (activeTool.value === toolId) {
+    recordRecentTool(toolId)
+    return
+  }
 
   const scrollTop = window.scrollY
   preserveWorkspaceHeight()
   activeTool.value = toolId
+  recordRecentTool(toolId)
   await nextTick()
   preserveWorkspaceHeight()
 
@@ -77,82 +82,117 @@ async function selectTool(toolId: ToolId) {
     window.scrollTo({ top: scrollTop, left: 0, behavior: 'auto' })
   })
 }
+
+async function selectTool(toolId: ToolId) {
+  await setActiveTool(toolId)
+  if (route.query.tool !== toolId) {
+    await router.replace({ query: { ...route.query, tool: toolId } })
+  }
+}
+
+watch(
+  () => route.query.tool,
+  (toolId) => {
+    if (isToolId(toolId)) void setActiveTool(toolId)
+  },
+)
+
+onMounted(() => window.addEventListener(favoritesChangedEvent, syncFavorites))
+onBeforeUnmount(() => window.removeEventListener(favoritesChangedEvent, syncFavorites))
 </script>
 
 <template>
   <section class="toolbox-page page-width">
     <header class="toolbox-intro">
       <div>
-        <p class="eyebrow">工具箱 / 9 项工具</p>
+        <p class="eyebrow">工具箱 / {{ allTools.length }} 项工具</p>
         <h1>网页工具箱</h1>
       </div>
-      <p>选择一个工具，在同一工作区完成转换、编码、校验与文本处理。界面切换不会打断当前浏览位置。</p>
+      <p>选择一个工具，在同一工作区完成转换、编码、校验与文本处理。每个工具都有独立链接，可以直接打开、分享或收藏。</p>
     </header>
 
     <div class="toolbox-statusbar" aria-label="工具箱状态">
       <span><i></i> 工具可用</span>
+      <span>Ctrl K 快速搜索</span>
       <span>浏览器内处理</span>
       <span>无需安装</span>
     </div>
 
     <div class="tools-layout">
       <aside class="tool-sidebar" aria-label="工具导航">
-      <div class="sidebar-heading">
-        <span>全部工具</span>
-        <code>09</code>
-      </div>
-      <div class="tool-menu">
-        <div v-for="group in toolGroups" :key="group.label" class="tool-menu-group">
-          <div class="tool-menu-group-title">
-            <span>{{ group.label }}</span>
-            <code>{{ group.code }}</code>
+        <div class="sidebar-heading">
+          <span>全部工具</span>
+          <code>{{ String(allTools.length).padStart(2, '0') }}</code>
+        </div>
+        <div class="tool-menu">
+          <div v-for="group in toolGroups" :key="group.label" class="tool-menu-group">
+            <div class="tool-menu-group-title">
+              <span>{{ group.label }}</span>
+              <code>{{ group.code }}</code>
+            </div>
+            <button
+              v-for="tool in group.tools"
+              :key="tool.id"
+              class="tool-menu-item"
+              :class="{ active: activeTool === tool.id }"
+              type="button"
+              :aria-pressed="activeTool === tool.id"
+              @click="selectTool(tool.id)"
+            >
+              <span class="tool-menu-icon"><IconGlyph :name="tool.icon" :size="17" /></span>
+              <span class="tool-menu-copy">
+                <strong>{{ tool.label }}</strong>
+                <small>{{ tool.description }}</small>
+              </span>
+              <IconGlyph class="tool-menu-arrow" name="arrow" :size="15" />
+            </button>
           </div>
-          <button
-            v-for="tool in group.tools"
-            :key="tool.id"
-            class="tool-menu-item"
-            :class="{ active: activeTool === tool.id }"
-            type="button"
-            :aria-pressed="activeTool === tool.id"
-            @click="selectTool(tool.id)"
-          >
-            <span class="tool-menu-icon"><IconGlyph :name="tool.icon" :size="17" /></span>
-            <span class="tool-menu-copy">
-              <strong>{{ tool.label }}</strong>
-              <small>{{ tool.description }}</small>
-            </span>
-            <IconGlyph class="tool-menu-arrow" name="arrow" :size="15" />
-          </button>
         </div>
-      </div>
-      <div class="sidebar-note">
-        <span class="sidebar-note-icon"><IconGlyph name="shield" :size="17" /></span>
-        <p><strong>浏览器内处理</strong><span>文件与内容在当前页面完成处理。</span></p>
-      </div>
-    </aside>
+        <div class="sidebar-note">
+          <span class="sidebar-note-icon"><IconGlyph name="shield" :size="17" /></span>
+          <p><strong>浏览器内处理</strong><span>文件与内容在当前页面完成处理。</span></p>
+        </div>
+      </aside>
 
-    <div
-      ref="workspaceRef"
-      class="tool-workspace"
-      :style="workspaceMinHeight ? { minHeight: `${workspaceMinHeight}px` } : undefined"
-    >
-      <div class="workspace-toolbar" aria-live="polite">
-        <div class="workspace-current">
-          <span class="workspace-icon"><IconGlyph :name="activeToolMeta?.icon || 'document'" :size="16" /></span>
-          <span><small>当前工具</small><strong>{{ activeToolMeta?.label }}</strong></span>
+      <div
+        ref="workspaceRef"
+        class="tool-workspace"
+        :style="workspaceMinHeight ? { minHeight: `${workspaceMinHeight}px` } : undefined"
+      >
+        <div class="workspace-toolbar" aria-live="polite">
+          <div class="workspace-current">
+            <span class="workspace-icon"><IconGlyph :name="activeToolMeta?.icon || 'document'" :size="16" /></span>
+            <span><small>当前工具</small><strong>{{ activeToolMeta?.label }}</strong></span>
+          </div>
+          <div class="workspace-actions">
+            <div class="workspace-meta"><span>{{ activeToolMeta?.group }}</span><code>{{ activeToolMeta?.code }}</code></div>
+            <button
+              class="workspace-favorite"
+              :class="{ active: activeIsFavorite }"
+              type="button"
+              :aria-pressed="activeIsFavorite"
+              :title="activeIsFavorite ? '取消收藏' : '收藏当前工具'"
+              @click="toggleActiveFavorite"
+            >
+              <IconGlyph name="star" :size="15" />
+              <span>{{ activeIsFavorite ? '已收藏' : '收藏' }}</span>
+            </button>
+          </div>
         </div>
-        <div class="workspace-meta"><span>{{ activeToolMeta?.group }}</span><code>{{ activeToolMeta?.code }}</code></div>
+        <MarkdownWordTool v-if="activeTool === 'markdown'" />
+        <ImageConvertTool v-else-if="activeTool === 'image'" />
+        <DataConvertTool v-else-if="activeTool === 'data'" />
+        <JsonFormatTool v-else-if="activeTool === 'json'" />
+        <RegexTool v-else-if="activeTool === 'regex'" />
+        <ColorConvertTool v-else-if="activeTool === 'color'" />
+        <BinaryConvertTool v-else-if="activeTool === 'binary'" />
+        <UrlCodecTool v-else-if="activeTool === 'url'" />
+        <HashTool v-else-if="activeTool === 'hash'" />
+        <TimestampTool v-else-if="activeTool === 'timestamp'" />
+        <UuidTool v-else-if="activeTool === 'uuid'" />
+        <RandomStringTool v-else-if="activeTool === 'random'" />
+        <TextTool v-else />
       </div>
-      <MarkdownWordTool v-if="activeTool === 'markdown'" />
-      <ImageConvertTool v-else-if="activeTool === 'image'" />
-      <DataConvertTool v-else-if="activeTool === 'data'" />
-      <BinaryConvertTool v-else-if="activeTool === 'binary'" />
-      <UrlCodecTool v-else-if="activeTool === 'url'" />
-      <HashTool v-else-if="activeTool === 'hash'" />
-      <TimestampTool v-else-if="activeTool === 'timestamp'" />
-      <UuidTool v-else-if="activeTool === 'uuid'" />
-      <TextTool v-else />
-    </div>
     </div>
   </section>
 </template>

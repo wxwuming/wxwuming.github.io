@@ -4,7 +4,10 @@ import { useRoute, useRouter } from 'vue-router'
 import IconGlyph from '../components/IconGlyph.vue'
 
 const MarkdownWordTool = defineAsyncComponent(() => import('../components/tools/MarkdownWordTool.vue'))
+const PdfWordTool = defineAsyncComponent(() => import('../components/tools/PdfWordTool.vue'))
 const ImageConvertTool = defineAsyncComponent(() => import('../components/tools/ImageConvertTool.vue'))
+const ImageOcrTool = defineAsyncComponent(() => import('../components/tools/ImageOcrTool.vue'))
+const TranslateTool = defineAsyncComponent(() => import('../components/tools/TranslateTool.vue'))
 const DataConvertTool = defineAsyncComponent(() => import('../components/tools/DataConvertTool.vue'))
 const JsonFormatTool = defineAsyncComponent(() => import('../components/tools/JsonFormatTool.vue'))
 const YamlConvertTool = defineAsyncComponent(() => import('../components/tools/YamlConvertTool.vue'))
@@ -188,7 +191,10 @@ onBeforeUnmount(() => window.removeEventListener(favoritesChangedEvent, syncFavo
           </div>
         </div>
         <MarkdownWordTool v-if="activeTool === 'markdown'" />
+        <PdfWordTool v-else-if="activeTool === 'pdf-word'" />
         <ImageConvertTool v-else-if="activeTool === 'image'" />
+        <ImageOcrTool v-else-if="activeTool === 'ocr'" />
+        <TranslateTool v-else-if="activeTool === 'translate'" />
         <DataConvertTool v-else-if="activeTool === 'data'" />
         <JsonFormatTool v-else-if="activeTool === 'json'" />
         <YamlConvertTool v-else-if="activeTool === 'yaml'" />

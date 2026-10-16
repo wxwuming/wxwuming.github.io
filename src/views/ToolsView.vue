@@ -6,6 +6,7 @@ import IconGlyph from '../components/IconGlyph.vue'
 const MarkdownWordTool = defineAsyncComponent(() => import('../components/tools/MarkdownWordTool.vue'))
 const PdfWordTool = defineAsyncComponent(() => import('../components/tools/PdfWordTool.vue'))
 const ImageConvertTool = defineAsyncComponent(() => import('../components/tools/ImageConvertTool.vue'))
+const ImageEnhanceTool = defineAsyncComponent(() => import('../components/tools/ImageEnhanceTool.vue'))
 const ImageOcrTool = defineAsyncComponent(() => import('../components/tools/ImageOcrTool.vue'))
 const TranslateTool = defineAsyncComponent(() => import('../components/tools/TranslateTool.vue'))
 const DataConvertTool = defineAsyncComponent(() => import('../components/tools/DataConvertTool.vue'))
@@ -193,6 +194,7 @@ onBeforeUnmount(() => window.removeEventListener(favoritesChangedEvent, syncFavo
         <MarkdownWordTool v-if="activeTool === 'markdown'" />
         <PdfWordTool v-else-if="activeTool === 'pdf-word'" />
         <ImageConvertTool v-else-if="activeTool === 'image'" />
+        <ImageEnhanceTool v-else-if="activeTool === 'image-enhance'" />
         <ImageOcrTool v-else-if="activeTool === 'ocr'" />
         <TranslateTool v-else-if="activeTool === 'translate'" />
         <DataConvertTool v-else-if="activeTool === 'data'" />

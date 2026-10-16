@@ -2,6 +2,7 @@ export type ToolId =
   | 'markdown'
   | 'pdf-word'
   | 'image'
+  | 'image-enhance'
   | 'ocr'
   | 'translate'
   | 'data'
@@ -48,6 +49,7 @@ export const toolGroups = [
       { id: 'markdown', icon: 'document', label: 'Markdown → Word', description: '导出标准 DOCX', keywords: ['markdown', 'word', 'docx', '文档'] },
       { id: 'pdf-word', icon: 'document', label: 'PDF ↔ Word', description: 'PDF / DOCX 双向转换', keywords: ['pdf', 'word', 'docx', '文档', '转换', '互转', '双向'] },
       { id: 'image', icon: 'image', label: '图片处理', description: '转换 / 缩放 / 压缩', keywords: ['图片', 'png', 'jpg', 'jpeg', 'webp', '压缩', '缩放'] },
+      { id: 'image-enhance', icon: 'image', label: '图片高清增强', description: '像素放大 / 锐化 / 降噪', keywords: ['图片', '超清', '高清', '分辨率', '像素', '清晰度', '放大', '锐化', '降噪', 'upscale', 'enhance'] },
       { id: 'ocr', icon: 'scan', label: '图片转文字', description: 'OCR / 截图翻译', keywords: ['ocr', '图片', '文字识别', '图片转文字', '截图翻译', '中文', '英文', '扫描件'] },
       { id: 'translate', icon: 'translate', label: '文本翻译', description: '自动检测 / 多语言', keywords: ['翻译', 'translate', '中文', '英文', '日语', '韩语', '多语言'] },
       { id: 'data', icon: 'data', label: '数据转换', description: 'JSON / CSV / TSV', keywords: ['json', 'csv', 'tsv', '数据', '表格'] },
